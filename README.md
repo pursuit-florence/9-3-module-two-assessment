@@ -120,7 +120,8 @@ The movie titles should be populated into `option` elements from a call to the A
 
 The first option should be blank, with no `value` and no text (see first image).
 
-![Page view when a dropdown option is selected](./images/readme/show.png)
+![Page view when a dropdown option is selected](./images
+/readme/show.png)
 
 ### Movie Description
 
