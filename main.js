@@ -9,19 +9,21 @@ const displayInfo = document.querySelector("#display-info")
 
 const select = document.querySelector("select")
 
-const unorderedList = document.querySelector("ul")
 
 
+let movieSelected = ""
 
 const strong = document.createElement("STRONG")
 
 const reset =  document.getElementById("reset-reviews")
 
 const inputs = document.querySelectorAll("input")
-// select.addEventListener("change",()=>{
- 
-// })
 
+//const showPeople = document.querySelector("#show-people")
+
+const showPeople = document.getElementById("show-people")
+
+let oneMovie = {}
 
 
 const url = "https://resource-ghibli-api.onrender.com/films"
@@ -37,16 +39,15 @@ fetch(url)
     getMovie(result)
     movieDetails(result)
     makeAreview (result)
-    getPeopleInfo(result)
+   
     
   })
-  .catch((error)=>{
-    console.log(error)
-  })
+  .catch()
 })
 
 
 function getMovie(movie){
+
   for(let i= 0; i < movie.length; i++){
   
   const option = document.createElement("option")
@@ -59,9 +60,14 @@ function getMovie(movie){
 
 function movieDetails(details){
   select.addEventListener("change",()=>{
+    for (const li of document.querySelectorAll(".lis2")) {li.remove(); }
     h3.innerText = select.value
-    
-  details.forEach((film)=>{
+    movieSelected = select.value
+    oneMovie = details.find((movie)=>
+    movie.title === movieSelected
+    )
+   
+    details.forEach((film)=>{
   if(select.value===film.title){
     description.innerText = film.description
   }
@@ -79,22 +85,26 @@ function movieDetails(details){
   function  makeAreview(views){
     form.addEventListener("submit",(event)=>{
       event.preventDefault()
-      const li = document.createElement("li")
-      li.setAttribute("class","deleteLi")
-    for(let i = 0; i < views.length; i++){
-       let review = event.target.review.value
-        if(select.value===views[i].title){
-         li.innerHTML = `<strong>${views[i].title}: </strong> ${review}`
       
-        }
-       if(select.value === "") {
+    for(let i = 0; i < views.length; i++){
+      if(select.value === "") {
         alert("Please select a movie first")
         select.remove("")
         break
+       }else{
+        const unorderedList = document.querySelector("ul")
+        const li = document.createElement("li")
+      li.setAttribute("class","deleteLi")
+        let review = event.target.review.value
+        if(select.value===views[i].title){
+         li.innerHTML = `<strong>${views[i].title}: </strong> ${review}`
+         unorderedList.append(li)
+         form.reset()
+        }
        }
       }
-      unorderedList.append(li)
-      form.reset()
+     
+      
    })
    
   }
@@ -107,40 +117,37 @@ function movieDetails(details){
   }
   })
   
+  
+  function armarOL (celebrities,allP) {
+    const ol = document.querySelector("ol")
+    celebrities.map((actor) => {
+        let bioDetail = allP.find((bio) => bio.id === actor.slice(8))
+        if (bioDetail != undefined) {
+        const li = document.createElement("li")
+        li.setAttribute("class","lis2")
+        li.textContent = bioDetail.name
+        ol.append(li)
+        }
+    })
+}
+   
+   showPeople.addEventListener("click",(event) =>{
+      event.preventDefault()
+      for (const li of document.querySelectorAll(".lis2")) {li.remove(); }
   const base_url ="https://resource-ghibli-api.onrender.com/people" 
-
-
-  fetch(base_url)
-  .then((response) =>{
+   fetch(base_url)
+    .then((response) =>{
     response.json()
     .then((results) =>{
-      getPeopleInfo(results)
+      armarOL(oneMovie.people,results)
          })
     })
     .catch((error)=>{
       console.log(error)
     })
 
-
-
-  reset.addEventListener("click",(event)=>{
-  event.preventDefault()
-  
    })
-
-   function getPeopleInfo(movieInfo){
-   const viewPeople = document.querySelector("#show-people")
-   const li = document.createElement("li")
-   const orderedList = document.querySelector("ol")
-   for(let i = 0; i < movieInfo.length; i++){
-     //console.log(movieInfo[i].name)
-     
-  
-   }
-   //orderedList.appendChild(li)
-
-}
-
+   
   
 // To ensure Cypress tests work as expeded, add any code/functions that you would like to run on page load inside this function
 
